@@ -1,6 +1,7 @@
 # db-service/app/config.py
 
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings
+
 
 class Settings(BaseSettings):
     PROJECT_NAME: str = "Gestpro-ERP Database Service"
