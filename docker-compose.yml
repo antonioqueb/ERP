@@ -1,4 +1,5 @@
 version: "3.9"
+
 services:
   gestpro-core:
     build:
@@ -7,12 +8,17 @@ services:
     container_name: gestpro-erp-core
     ports:
       - "8000:8000"
-    environment:
-      - DATABASE_SERVICE_URL=http://db-service:8001/api/v1
+    env_file:
+      - .env
     networks:
       - gestpro-network
     depends_on:
       - db-service
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
   db-service:
     build:
@@ -23,6 +29,11 @@ services:
       - "8001:8001"
     networks:
       - gestpro-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
 networks:
   gestpro-network:
