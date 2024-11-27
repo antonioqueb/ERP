@@ -1,26 +1,6 @@
 version: "3.9"
 
 services:
-  gestpro-core:
-    build:
-      context: ./gestpro-erp-core
-      dockerfile: Dockerfile
-    container_name: gestpro-erp-core
-    ports:
-      - "8000:8000"
-    env_file:
-      - .env
-    networks:
-      - gestpro-network
-    depends_on:
-      - db-service
-      - auth-service
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-
   db-service:
     image: postgres:15
     container_name: gestpro-erp-db-service
@@ -39,10 +19,8 @@ services:
       retries: 5
     command: >
       sh -c "
-      postgres &
-      sleep 5 &&
-      psql -U user -d gestpro_db -c 'CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, username VARCHAR(255) UNIQUE NOT NULL, hashed_password VARCHAR(255) NOT NULL);' &&
-      psql -U user -d gestpro_db -c \"INSERT INTO users (username, hashed_password) VALUES ('admin', '\$2b\$12\$eIX/gOxlP.xNvLPwVFRHNOcFCtCZB5WQG4R1t5j6lfYB61Zm1S6nG') ON CONFLICT DO NOTHING;\"
+      chown -R postgres:postgres /var/lib/postgresql/data &&
+      su postgres -c '/usr/lib/postgresql/15/bin/postgres -D /var/lib/postgresql/data'
       "
 
   auth-service:
@@ -60,6 +38,26 @@ services:
       - db-service
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8002/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  gestpro-core:
+    build:
+      context: ./gestpro-erp-core
+      dockerfile: Dockerfile
+    container_name: gestpro-erp-core
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    networks:
+      - gestpro-network
+    depends_on:
+      - db-service
+      - auth-service
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
       interval: 30s
       timeout: 10s
       retries: 5
