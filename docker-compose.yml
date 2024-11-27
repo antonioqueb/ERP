@@ -27,7 +27,7 @@ services:
     ports:
       - "8002:8002"
     env_file:
-      - /ERP/.env
+      - .env
     networks:
       - gestpro-network
     depends_on:
@@ -52,7 +52,7 @@ services:
     ports:
       - "8000:8000"
     env_file:
-      - /ERP/.env
+      - .env
     networks:
       - gestpro-network
     depends_on:
