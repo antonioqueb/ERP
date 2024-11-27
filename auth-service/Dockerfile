@@ -11,6 +11,10 @@ RUN apt-get update && apt-get install -y \
 # Set work directory
 WORKDIR /app
 
+# Copy wait-for-it.sh into the image and make it executable
+COPY wait-for-it.sh /usr/bin/wait-for-it.sh
+RUN chmod +x /usr/bin/wait-for-it.sh
+
 # Copy requirements
 COPY requirements.txt .
 
