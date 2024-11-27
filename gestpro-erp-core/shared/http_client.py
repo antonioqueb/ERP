@@ -1,5 +1,6 @@
 import httpx
 from typing import Optional, Dict, Any
+from core.config import settings
 
 
 class HTTPClient:
@@ -104,3 +105,33 @@ class HTTPClient:
                 return response.json()
             except httpx.HTTPError as e:
                 raise RuntimeError(f"Error during DELETE request to {endpoint}: {e}")
+
+
+class AuthServiceClient(HTTPClient):
+    """
+    Cliente especializado para interactuar con el servicio de autenticación (auth-service).
+    """
+
+    def __init__(self, base_url: str = settings.AUTH_SERVICE_URL):
+        """
+        Inicializa el cliente con la URL base de auth-service.
+
+        Args:
+            base_url (str): URL base del servicio de autenticación.
+        """
+        super().__init__(base_url)
+
+    async def verify_token(self, token: str) -> Dict[str, Any]:
+        """
+        Verifica un token JWT con el servicio de autenticación.
+
+        Args:
+            token (str): Token JWT a verificar.
+
+        Returns:
+            Dict[str, Any]: Datos decodificados del token si es válido.
+
+        Raises:
+            RuntimeError: Si ocurre un error durante la verificación.
+        """
+        return await self.post("/verify-token", json={"token": token})
