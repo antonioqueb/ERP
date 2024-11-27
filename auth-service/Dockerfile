@@ -1,16 +1,24 @@
 # Use an appropriate base image
 FROM python:3.10-slim
 
-# Install curl
-RUN apt-get update && apt-get install -y curl
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    libpq-dev \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
 
-# Install any other dependencies
-COPY requirements.txt .
-RUN pip install -r requirements.txt
-
-# Copy your application code
-COPY . /app
+# Set work directory
 WORKDIR /app
+
+# Copy requirements
+COPY requirements.txt .
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code
+COPY . .
 
 # Expose the port
 EXPOSE 8002
