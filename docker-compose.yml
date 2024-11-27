@@ -21,7 +21,9 @@ services:
       retries: 5
     command: >
       sh -c "
-      mkdir -p /var/lib/postgresql/data &&
+      if [ ! -f /var/lib/postgresql/data/postgresql.conf ]; then
+        su postgres -c '/usr/lib/postgresql/15/bin/initdb -D /var/lib/postgresql/data';
+      fi;
       chown -R postgres:postgres /var/lib/postgresql/data &&
       su postgres -c '/usr/lib/postgresql/15/bin/postgres -D /var/lib/postgresql/data'
       "
@@ -44,6 +46,11 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    command: >
+      sh -c "
+      /usr/bin/wait-for-it.sh db-service:5432 -- 
+      python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8002
+      "
 
   gestpro-core:
     build:
@@ -64,10 +71,16 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    command: >
+      sh -c "
+      /usr/bin/wait-for-it.sh db-service:5432 -- 
+      /usr/bin/wait-for-it.sh auth-service:8002 -- 
+      python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8000
+      "
 
 networks:
   gestpro-network:
     driver: bridge
 
 volumes:
-  db-data:  # Define el volumen persistente para PostgreSQL
+  db-data:
