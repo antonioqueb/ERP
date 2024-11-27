@@ -20,15 +20,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    command: >
-      sh -c "
-      if [ ! -f /var/lib/postgresql/data/postgresql.conf ]; then
-        su postgres -c '/usr/lib/postgresql/15/bin/initdb -D /var/lib/postgresql/data';
-      fi;
-      echo 'host all all all trust' >> /var/lib/postgresql/data/pg_hba.conf &&
-      chown -R postgres:postgres /var/lib/postgresql/data &&
-      su postgres -c '/usr/lib/postgresql/15/bin/postgres -D /var/lib/postgresql/data'
-      "
 
   auth-service:
     build:
