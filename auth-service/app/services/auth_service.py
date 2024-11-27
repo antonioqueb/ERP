@@ -1,15 +1,12 @@
-from app.utils.token import verify_password
+from datetime import datetime, timedelta
+from jose import jwt
+from app.config import settings
 
-# Simulación de base de datos de usuarios
-fake_users_db = {
-    "admin": {
-        "username": "admin",
-        "hashed_password": "$2b$12$eIX/gOxlP.xNvLPwVFRHNOcFCtCZB5WQG4R1t5j6lfYB61Zm1S6nG", # hash de "password"
-    }
-}
-
-def authenticate_user(username: str, password: str):
-    user = fake_users_db.get(username)
-    if user and verify_password(password, user["hashed_password"]):
-        return user
-    return None
+def create_access_token(data: dict) -> str:
+    """
+    Crea un token JWT con los datos proporcionados.
+    """
+    to_encode = data.copy()
+    expire = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    to_encode.update({"exp": expire})
+    return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
