@@ -1,7 +1,9 @@
+version: '3.8'
+
 services:
-  db-service:
+  postgres-service:
     image: postgres:15
-    container_name: gestpro-erp-db-service
+    container_name: gestpro-erp-postgres-service
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
@@ -18,6 +20,31 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+  db-service:
+    build:
+      context: ./db-service
+      dockerfile: Dockerfile
+    container_name: db-service
+    ports:
+      - "8001:8001"
+    env_file:
+      - ./db-service/.env
+    networks:
+      - gestpro-network
+    depends_on:
+      postgres-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/api/v1/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command: >
+      sh -c "
+      /usr/bin/wait-for-it.sh postgres-service:5432 --timeout=30 --
+      python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8001
+      "
 
   auth-service:
     build:
@@ -40,7 +67,7 @@ services:
       retries: 5
     command: >
       sh -c "
-      /usr/bin/wait-for-it.sh db-service:5432 --timeout=30 -- 
+      /usr/bin/wait-for-it.sh db-service:8001 --timeout=30 --
       python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8002
       "
 
@@ -58,6 +85,8 @@ services:
     depends_on:
       auth-service:
         condition: service_healthy
+      db-service:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
       interval: 10s
@@ -65,7 +94,7 @@ services:
       retries: 5
     command: >
       sh -c "
-      /usr/bin/wait-for-it.sh auth-service:8002 --timeout=30 -- 
+      /usr/bin/wait-for-it.sh auth-service:8002 --timeout=30 --
       uvicorn main:app --host 0.0.0.0 --port 8000
       "
 
