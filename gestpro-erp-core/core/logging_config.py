@@ -1,7 +1,7 @@
 import logging
 from logging.config import dictConfig
 
-# Configuración de logging dinámica basada en settings
+# Configuración de logging dinámica
 def get_logging_config(settings):
     return {
         "version": 1,

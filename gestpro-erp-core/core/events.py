@@ -1,12 +1,13 @@
 import logging
 from fastapi import FastAPI
 from httpx import AsyncClient
-from core.config import Settings
 
 logger = logging.getLogger("gestpro-erp-core")
 
-async def on_startup(app: FastAPI, settings: Settings):
+async def on_startup(app: FastAPI):
     logger.info("Iniciando Gestpro-ERP Core...")
+    # Acceder a settings desde app.state
+    settings = app.state.settings
     async with AsyncClient() as client:
         try:
             response = await client.get(f"{settings.DATABASE_SERVICE_URL}/health")

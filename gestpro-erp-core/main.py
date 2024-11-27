@@ -10,7 +10,7 @@ setup_logging(settings)
 # Crear instancia de FastAPI
 app = FastAPI(title=settings.PROJECT_NAME)
 
-# Registrar settings en el estado de la aplicación
+# Registrar settings en el estado de la aplicación (opcional)
 app.state.settings = settings
 
 @app.on_event("startup")
