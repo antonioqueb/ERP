@@ -73,9 +73,8 @@ services:
       retries: 5
     command: >
       sh -c "
-      /usr/bin/wait-for-it.sh db-service:5432 -- 
       /usr/bin/wait-for-it.sh auth-service:8002 -- 
-      python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8000
+      uvicorn main:app --host 0.0.0.0 --port 8000
       "
 
 networks:
