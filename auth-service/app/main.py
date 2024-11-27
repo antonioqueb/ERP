@@ -12,23 +12,23 @@ app = FastAPI(title=settings.PROJECT_NAME)
 @app.get(f"{settings.API_VERSION}/health")
 async def health_check():
     """
-    Endpoint para verificar el estado de salud del servicio de autenticación.
+    Endpoint para verificar el estado de salud del auth-service.
     """
     return {"status": "auth-service is healthy"}
 
 @app.on_event("startup")
 async def startup_event():
     """
-    Eventos a ejecutar al iniciar la aplicación.
+    Eventos ejecutados al iniciar la aplicación.
     """
     await on_startup(app)
 
 @app.on_event("shutdown")
 async def shutdown_event():
     """
-    Eventos a ejecutar al apagar la aplicación.
+    Eventos ejecutados al apagar la aplicación.
     """
     await on_shutdown(app)
 
-# Registrar rutas de autenticación con prefijo API_VERSION
+# Registrar rutas de autenticación con el prefijo API_VERSION
 app.include_router(auth.router, prefix=settings.API_VERSION)
