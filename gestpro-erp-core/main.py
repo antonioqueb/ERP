@@ -1,3 +1,4 @@
+# gestpro-erp-core/main.py
 from fastapi import FastAPI, Depends
 from core.config import settings
 from core.logging_config import setup_logging
