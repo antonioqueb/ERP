@@ -1,26 +1,19 @@
-from fastapi import FastAPI
-from core.config import settings
-from core.routers import health
-from core.events import on_startup, on_shutdown
-from core.logging_config import setup_logging
+from pydantic import BaseSettings, Field
 
-# Configurar logging global
-setup_logging()
+class Settings(BaseSettings):
+    PROJECT_NAME: str = "Gestpro-ERP Core"
+    ENVIRONMENT: str = "development"
+    DATABASE_SERVICE_URL: str = "http://db-service:8001/api/v1"
+    API_VERSION: str = "/api/v1"
 
-# Crear instancia de FastAPI
-app = FastAPI(
-    title=settings.PROJECT_NAME,
-    debug=settings.DEBUG,  # Configura el modo de depuración desde settings
-)
+    # Configuración de logs
+    LOG_LEVEL: str = Field(default="INFO", env="LOG_LEVEL")
+    LOG_FILE: str = Field(default="gestpro-erp-core.log", env="LOG_FILE")
+    DEBUG: bool = Field(default=True, env="DEBUG")
+    TIMEOUT: int = Field(default=30, env="TIMEOUT")
 
-# Eventos de inicialización
-@app.on_event("startup")
-async def startup_event():
-    await on_startup(app)
+    class Config:
+        env_file = ".env"
 
-@app.on_event("shutdown")
-async def shutdown_event():
-    await on_shutdown(app)
-
-# Registrar routers
-app.include_router(health.router, prefix=settings.API_VERSION)
+# Instancia global de settings
+settings = Settings()

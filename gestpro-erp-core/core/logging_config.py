@@ -1,9 +1,8 @@
 import logging
 from logging.config import dictConfig
-from core.config import settings
 
-# Configuración de logging dinámica basada en el entorno
-def get_logging_config():
+# Configuración de logging dinámica basada en settings
+def get_logging_config(settings):
     return {
         "version": 1,
         "disable_existing_loggers": False,
@@ -20,19 +19,19 @@ def get_logging_config():
         },
         "handlers": {
             "console": {
-                "level": settings.LOG_LEVEL,  # Nivel desde settings
+                "level": settings.LOG_LEVEL,
                 "formatter": "detailed" if settings.DEBUG else "default",
                 "class": "logging.StreamHandler",
             },
             "file": {
-                "level": settings.LOG_LEVEL,  # Nivel desde settings
+                "level": settings.LOG_LEVEL,
                 "formatter": "detailed",
                 "class": "logging.FileHandler",
-                "filename": settings.LOG_FILE,  # Archivo de log desde settings
+                "filename": settings.LOG_FILE,
             },
         },
         "loggers": {
-            "gestpro-erp-core": {  # Logger principal de la aplicación
+            "gestpro-erp-core": {
                 "handlers": ["console", "file"],
                 "level": settings.LOG_LEVEL,
                 "propagate": False,
@@ -40,7 +39,5 @@ def get_logging_config():
         },
     }
 
-# Configuración global del sistema de logging
-def setup_logging():
-    logging_config = get_logging_config()
-    dictConfig(logging_config)
+def setup_logging(settings):
+    dictConfig(get_logging_config(settings))

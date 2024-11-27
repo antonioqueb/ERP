@@ -1,15 +1,15 @@
 import logging
 from fastapi import FastAPI
 from httpx import AsyncClient
+from core.config import Settings
 
 logger = logging.getLogger("gestpro-erp-core")
 
-async def on_startup(app: FastAPI):
+async def on_startup(app: FastAPI, settings: Settings):
     logger.info("Iniciando Gestpro-ERP Core...")
-    # Verificar conexión a db-service (opcional)
     async with AsyncClient() as client:
         try:
-            response = await client.get(f"{app.state.settings.DATABASE_SERVICE_URL}/health")
+            response = await client.get(f"{settings.DATABASE_SERVICE_URL}/health")
             if response.status_code == 200:
                 logger.info("db-service está disponible.")
             else:
