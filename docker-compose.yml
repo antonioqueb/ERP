@@ -12,13 +12,16 @@ services:
       - "5432:5432"
     networks:
       - gestpro-network
+    volumes:
+      - db-data:/var/lib/postgresql/data  # Volumen persistente para PostgreSQL
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "user"]
-      interval: 30s
-      timeout: 10s
+      interval: 10s
+      timeout: 5s
       retries: 5
     command: >
       sh -c "
+      mkdir -p /var/lib/postgresql/data &&
       chown -R postgres:postgres /var/lib/postgresql/data &&
       su postgres -c '/usr/lib/postgresql/15/bin/postgres -D /var/lib/postgresql/data'
       "
@@ -38,8 +41,8 @@ services:
       - db-service
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8002/api/v1/health"]
-      interval: 30s
-      timeout: 10s
+      interval: 10s
+      timeout: 5s
       retries: 5
 
   gestpro-core:
@@ -58,10 +61,13 @@ services:
       - auth-service
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
-      interval: 30s
-      timeout: 10s
+      interval: 10s
+      timeout: 5s
       retries: 5
 
 networks:
   gestpro-network:
     driver: bridge
+
+volumes:
+  db-data:  # Define el volumen persistente para PostgreSQL
