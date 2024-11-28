@@ -3,12 +3,11 @@ from pydantic import Field
 
 class Settings(BaseSettings):
     project_name: str = "Gestpro-ERP Database Service"
-    environment: str = "development"
-    api_version: str = "/api/v1"
-    database_url: str = Field(..., env='DATABASE_URL')
+    environment: str = Field(default="development")
+    api_version: str = Field(default="/api/v1", env="API_VERSION")
+    database_url: str = Field(..., env="DATABASE_URL")
 
-    model_config = {
-        "env_file": ".env",
-    }
+    class Config:
+        env_file = ".env"
 
 settings = Settings()
