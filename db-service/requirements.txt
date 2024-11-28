@@ -1,3 +1,7 @@
-fastapi==0.100.0
-uvicorn==0.22.0
+pydantic==2.1.1  # O la versión más reciente de Pydantic v2.x
 pydantic-settings==2.0.3
+fastapi==0.100.0  # O una versión compatible con Pydantic v2.x
+uvicorn==0.22.0
+sqlalchemy==2.0.20  # Asegúrate de que sea compatible con Pydantic v2.x y FastAPI
+python-dotenv==1.0.0
+psycopg2-binary==2.9.6
