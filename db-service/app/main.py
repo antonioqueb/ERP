@@ -9,7 +9,8 @@ from app.logging_config import setup_logging
 # Configurar logging
 setup_logging()
 
-app = FastAPI(title=settings.PROJECT_NAME)
+app = FastAPI(title=settings.project_name)
+
 
 @app.on_event("startup")
 async def startup_event():
