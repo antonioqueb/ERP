@@ -58,6 +58,8 @@ services:
     networks:
       - gestpro-network
     depends_on:
+      postgres-service:
+        condition: service_healthy
       db-service:
         condition: service_healthy
     healthcheck:
@@ -67,7 +69,7 @@ services:
       retries: 5
     command: >
       sh -c "
-      /usr/bin/wait-for-it.sh db-service:8001 --timeout=30 --
+      /usr/bin/wait-for-it.sh postgres-service:5432 --timeout=30 --
       python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8002
       "
 

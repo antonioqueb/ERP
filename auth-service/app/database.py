@@ -1,9 +1,8 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from app.config import settings  # Importa las configuraciones
 
-DATABASE_URL = "postgresql://user:password@db-service:5432/gestpro_db"
-
-engine = create_engine(DATABASE_URL)
+engine = create_engine(settings.database_url)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # Crear tablas si no existen (necesario para migraciones futuras)
